@@ -1,5 +1,5 @@
 [package]
-name = "RustLangTalk"
+name = "rust_lang_talk"
 version = "0.1.0"
 authors = ["Andy Lowry <andy.lowry@moonpig.com>"]
 edition = "2018"
