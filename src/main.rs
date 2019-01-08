@@ -1,12 +1,12 @@
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum Suit {
+    Clubs,
     Diamonds,
     Hearts,
-    Clubs,
     Spades,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialOrd, PartialEq)]
 pub enum Rank {
     A,
     R2,
@@ -31,4 +31,25 @@ fn main() {
     let rank = Rank::R4;
     let card = Card(suit, rank);
     println!("{:?}", card);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn ranks_are_ordered() {
+        assert!(Rank::A < Rank::R2);
+        assert!(Rank::R2 < Rank::R3);
+        assert!(Rank::R3 < Rank::R4);
+        assert!(Rank::R4 < Rank::R5);
+        assert!(Rank::R5 < Rank::R6);
+        assert!(Rank::R6 < Rank::R7);
+        assert!(Rank::R7 < Rank::R8);
+        assert!(Rank::R8 < Rank::R9);
+        assert!(Rank::R9 < Rank::R10);
+        assert!(Rank::R10 < Rank::J);
+        assert!(Rank::J < Rank::Q);
+        assert!(Rank::Q < Rank::K);
+    }
 }
