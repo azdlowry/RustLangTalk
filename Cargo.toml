@@ -1,0 +1,7 @@
+[package]
+name = "RustLangTalk"
+version = "0.1.0"
+authors = ["Andy Lowry <andy.lowry@moonpig.com>"]
+edition = "2018"
+
+[dependencies]
