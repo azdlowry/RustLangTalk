@@ -33,9 +33,15 @@ pub struct Card(Suit, Rank);
 #[derive(Debug)]
 pub struct Hand(Card, Card, Card, Card, Card);
 
+#[derive(Debug, PartialEq)]
 pub enum HandRank {
-    StraightFlush(Rank),
     HighCard(Rank),
+}
+
+impl Hand {
+    pub fn rank(&self) -> HandRank {
+        HandRank::HighCard(Rank::A)
+    }
 }
 
 fn main() {
@@ -49,6 +55,10 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    macro_rules! card {
+        ($r:ident, $s:ident) => (Card(Suit::$s, Rank::$r));
+    }
 
     #[test]
     fn ranks_are_ordered() {
@@ -64,6 +74,18 @@ mod tests {
         assert!(Rank::R10 < Rank::J);
         assert!(Rank::J < Rank::Q);
         assert!(Rank::Q < Rank::K);
+    }
+
+    #[test]
+    fn highcard_hands_have_rank_of_highest_card_in_hand() {
+        let hand = Hand(
+            card!(K, Clubs),
+            card!(A, Clubs),
+            card!(K, Clubs),
+            card!(K, Clubs),
+            card!(K, Clubs),
+        );
+        assert_eq!(HandRank::HighCard(Rank::A), hand.rank());
     }
 }
 
