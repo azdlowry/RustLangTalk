@@ -37,17 +37,29 @@ pub struct Hand(Card, Card, Card, Card, Card);
 #[derive(Debug, PartialEq)]
 pub enum HandRank {
     HighCard(Rank),
+    OnePair(Rank),
 }
 
 impl Hand {
     pub fn rank(&self) -> HandRank {
-        HandRank::HighCard(
-            vec![self.0, self.1, self.2, self.3, self.4]
-                .iter()
-                .map(|c| { c.1 })
-                .max()
-                .unwrap()
-        )
+        if let Some(rank) = self.highest_pair() {
+            HandRank::OnePair(rank)
+        } else {
+            HandRank::HighCard(
+                vec![self.0, self.1, self.2, self.3, self.4]
+                    .iter()
+                    .map(|c| { c.1 })
+                    .max()
+                    .unwrap()
+            )
+        }
+    }
+
+    fn highest_pair(&self) -> Option<Rank> {
+        match self {
+            Hand(Card(_, r1), Card(_, r2), _, _, _) if r1 == r2 => Some(*r1),
+            _ => None
+        }
     }
 }
 
@@ -88,29 +100,50 @@ mod tests {
         let hand = Hand(
             card!(K, Clubs),
             card!(A, Clubs),
-            card!(K, Clubs),
-            card!(K, Clubs),
-            card!(K, Clubs),
+            card!(R2, Diamonds),
+            card!(R4, Hearts),
+            card!(R6, Clubs),
         );
         assert_eq!(HandRank::HighCard(Rank::A), hand.rank());
 
         let hand = Hand(
             card!(K, Clubs),
-            card!(K, Clubs),
-            card!(K, Clubs),
-            card!(K, Clubs),
-            card!(K, Clubs),
+            card!(J, Diamonds),
+            card!(R5, Hearts),
+            card!(R7, Spades),
+            card!(R9, Clubs),
         );
         assert_eq!(HandRank::HighCard(Rank::K), hand.rank());
 
         let hand = Hand(
             card!(K, Clubs),
-            card!(K, Clubs),
-            card!(K, Clubs),
-            card!(A, Clubs),
-            card!(K, Clubs),
+            card!(R4, Diamonds),
+            card!(R2, Hearts),
+            card!(A, Spades),
+            card!(Q, Clubs),
         );
         assert_eq!(HandRank::HighCard(Rank::A), hand.rank());
+    }
+
+    #[test]
+    fn onepair_hands_have_rank_of_pair() {
+        let hand = Hand(
+            card!(K, Clubs),
+            card!(K, Spades),
+            card!(J, Clubs),
+            card!(R4, Diamonds),
+            card!(R3, Hearts),
+        );
+        assert_eq!(HandRank::OnePair(Rank::K), hand.rank());
+
+        let hand = Hand(
+            card!(Q, Clubs),
+            card!(Q, Spades),
+            card!(J, Clubs),
+            card!(R4, Diamonds),
+            card!(R3, Hearts),
+        );
+        assert_eq!(HandRank::OnePair(Rank::Q), hand.rank());
     }
 }
 
