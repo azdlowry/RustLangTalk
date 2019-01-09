@@ -1,6 +1,7 @@
 #![deny(warnings)]
 
 use std::fmt::{self, Display};
+use std::vec;
 
 #[derive(Debug, Copy, Clone)]
 pub enum Suit {
@@ -12,7 +13,6 @@ pub enum Suit {
 
 #[derive(Debug, PartialOrd, PartialEq, Ord, Eq, Copy, Clone)]
 pub enum Rank {
-    A,
     R2,
     R3,
     R4,
@@ -25,6 +25,7 @@ pub enum Rank {
     J,
     Q,
     K,
+    A,
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -40,7 +41,13 @@ pub enum HandRank {
 
 impl Hand {
     pub fn rank(&self) -> HandRank {
-        HandRank::HighCard(Rank::A)
+        HandRank::HighCard(
+            vec![self.0, self.1, self.2, self.3, self.4]
+                .iter()
+                .map(|c| { c.1 })
+                .max()
+                .unwrap()
+        )
     }
 }
 
@@ -62,7 +69,6 @@ mod tests {
 
     #[test]
     fn ranks_are_ordered() {
-        assert!(Rank::A < Rank::R2);
         assert!(Rank::R2 < Rank::R3);
         assert!(Rank::R3 < Rank::R4);
         assert!(Rank::R4 < Rank::R5);
@@ -74,6 +80,7 @@ mod tests {
         assert!(Rank::R10 < Rank::J);
         assert!(Rank::J < Rank::Q);
         assert!(Rank::Q < Rank::K);
+        assert!(Rank::K < Rank::A);
     }
 
     #[test]
@@ -83,6 +90,24 @@ mod tests {
             card!(A, Clubs),
             card!(K, Clubs),
             card!(K, Clubs),
+            card!(K, Clubs),
+        );
+        assert_eq!(HandRank::HighCard(Rank::A), hand.rank());
+
+        let hand = Hand(
+            card!(K, Clubs),
+            card!(K, Clubs),
+            card!(K, Clubs),
+            card!(K, Clubs),
+            card!(K, Clubs),
+        );
+        assert_eq!(HandRank::HighCard(Rank::K), hand.rank());
+
+        let hand = Hand(
+            card!(K, Clubs),
+            card!(K, Clubs),
+            card!(K, Clubs),
+            card!(A, Clubs),
             card!(K, Clubs),
         );
         assert_eq!(HandRank::HighCard(Rank::A), hand.rank());
