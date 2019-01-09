@@ -1,6 +1,8 @@
+#![deny(warnings)]
+
 use std::fmt::{self, Display};
 
-#[derive(Debug, PartialEq, Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub enum Suit {
     Clubs,
     Diamonds,
@@ -30,6 +32,11 @@ pub struct Card(Suit, Rank);
 
 #[derive(Debug)]
 pub struct Hand(Card, Card, Card, Card, Card);
+
+pub enum HandRank {
+    StraightFlush(Rank),
+    HighCard(Rank),
+}
 
 fn main() {
     let suit = Suit::Diamonds;
